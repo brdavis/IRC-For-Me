@@ -11,12 +11,22 @@ public class client {
 
 			//get data from user
 			Scanner userInput = new Scanner(System.in);
-			System.out.println("Enter input");
-			String input= userInput.nextLine();
+//			System.out.println("Enter input");
+//			String input= userInput.nextLine();
+
+
+			//get username and password
+			System.out.println("Enter a username");
+			String username = userInput.nextLine();
+			System.out.println("Enter a password");
+			String password = userInput.nextLine();
+
+			System.out.println("username: " + username + " password: " + password);
+
 
 			//send data to server
 			PrintStream p = new PrintStream(connectionToServer.getOutputStream());
-			p.println(input);
+			p.println(username + password);
 
 			//receive data from server
 			Scanner recievedFromServer = new Scanner (connectionToServer.getInputStream());
