@@ -1,8 +1,21 @@
 # IRC-For-Me
+Copyright (c) 2017 Blair Davis
+
 This is a repository for creating an irc server and client in java.
 
+# How To Use
 
-# Week 3 Report
+# Useful Links
+
+# Status
+
+# Limitations
+
+# License
+
+# Status reports
+
+## Week 3 Report
 
   **What I've accomplished so far:**
   
