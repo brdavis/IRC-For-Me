@@ -21,7 +21,7 @@ See the GitHub Development Wiki for pending and completed development tasks.
  * This project can only be deployed on the linux command line. 
 
 # License
-This project is made available under the MIT license. Please see the COPYING file in this distribution for license terms.
+This project is made available under the MIT license. Please see the LICENSE file in this repository for license terms.
 
 # Status reports
 
