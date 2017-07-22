@@ -3,15 +3,25 @@ Copyright (c) 2017 Blair Davis
 
 This is a repository for creating an irc server and client in java.
 
+IRC-For-ME is written in Java and is intended to be deployed via the linux command line.
+
+This is currently a work in progress and is expected to be wrapped up in mid-August.
+
+
 # How To Use
 
 # Useful Links
 
 # Status
 
+See the GitHub Development Wiki for pending and completed development tasks.
+
 # Limitations
+ * Current limitation is that this project does not contain a GUI (graphic user interface).
+ * This project can only be deployed on the linux command line. 
 
 # License
+This project is made available under the MIT license. Please see the COPYING file in this distribution for license terms.
 
 # Status reports
 
