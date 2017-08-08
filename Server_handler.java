@@ -1,6 +1,8 @@
-// This is a server-side thread-based event handler 
-// This class implements the functionality of the server for each client connection
-// The primary functions are: getting messages from the clients, and sending messages to the clients
+/**
+* This is a server-side thread-based event handler 
+* This class implements the functionality of the server for each client connection
+* The primary functions are getting messages from the clients and sending messages to the clients
+**/
 
 import java.util.*;
 import java.net.*;
@@ -8,6 +10,9 @@ import java.io.*;
 
 public class Server_handler extends Thread {
 
+	/**
+	* Class variables
+	**/
 	public static final int ERROR = 1;
 	private Socket socket;
 	private String name;
@@ -16,6 +21,9 @@ public class Server_handler extends Thread {
 	private final Server_handler[] threads;
 	private int maxClientsCount;
 
+	/**
+	* Constructor method
+	**/
 	public Server_handler(String name, Socket socket, Server_handler[] threads) {
 		this.name = "< " + name + " > ";
 		this.socket = socket;
@@ -23,14 +31,16 @@ public class Server_handler extends Thread {
 		maxClientsCount = threads.length;
 	}
 
-
-	@Override
+	/**
+	* Standard run method to start thread functionality
+	**/
 	public void run() {
+		System.out.println("I am running");
+
 		//update the client threads list so as to have a record of all active clients
 		int maxClientsCount = this.maxClientsCount;
 		Server_handler[] threads = this.threads;
 
-		System.out.println("I am running");
 		//relay messages
 		try {
 			server_output = new PrintWriter(socket.getOutputStream(), true);

@@ -1,6 +1,8 @@
-// This class starts the server for the application
-// Its functionality is to establish the server and to accept new client connections
-// Each client connection is then passed on to a Client handler thread
+/**
+* This class starts the server for the application
+* Its functionality is to establish the server and to accept new client connections
+* Each client connection is then passed on to a Client handler thread
+**/
 
 import java.net.*;
 import java.util.*;
@@ -16,7 +18,10 @@ public class Server {
 
 
 	public static void main(String[] args) {
-		//open server socket for listening
+		
+		/**
+		* Opens server socket port to listen (server comes online)
+		**/
 		try {
 			serverSocket = new ServerSocket(SERVER_PORT);
 			System.out.println("The IRC-For-Me server has started on port " + SERVER_PORT);
@@ -29,11 +34,11 @@ public class Server {
 	}
 
 
+	/**
+	* Accepts new client connection requests continuously while server port is online
+	* Transfers accepted clients to the Server_handler
+	**/
 	public static void accept_clients() {
-		//Use ArrayList to store all client socket connections
-		ArrayList<Server_handler> client_list = new ArrayList<Server_handler>();
-	
-		//accept and client connection requests and transfer them to the client handler
 		while(true) {
 			try {
 				Socket socket = serverSocket.accept();
