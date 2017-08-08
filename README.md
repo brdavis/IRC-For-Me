@@ -23,6 +23,9 @@ See the GitHub Development Wiki for pending and completed development tasks.
 # License
 This project is made available under the MIT license. Please see the LICENSE file in this repository for license terms.
 
+# Authors
+Blair Davis
+
 # Status reports
 
 ## Week 3 Report
