@@ -8,7 +8,20 @@ IRC-For-ME is written in Java and is intended to be deployed via the linux comma
 This is currently a work in progress and is expected to be wrapped up in mid-August.
 
 
-# How To Use
+# How To Run This Application
+
+This application is intended to have a very simple and straight-forward deployment. You can run the entire application via the linux command line with just the commands provided for you below.  
+
+1. Open the linux command line on your computer.  
+1. Clone this repository with the following command:    
+`git clone https://github.com/brdavis/IRC-For-Me.git `  
+1. Compile the application with the following commands:    
+`javac Server.javac Server_handler.javac `    
+`javac Client.javac Client_handler.javac`    
+1. Run the application by starting the server first with the following command:    
+`java Server Server_handler`  
+1. In a seperate window start the client with the following command:    
+`java Client Clinet_handler`
 
 # Useful Links
 ### IRC Information
