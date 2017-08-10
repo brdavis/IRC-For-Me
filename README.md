@@ -11,6 +11,10 @@ This is currently a work in progress and is expected to be wrapped up in mid-Aug
 # How To Use
 
 # Useful Links
+### IRC Information
+* http://www.mirc.com/ircintro.html
+
+### Socket Programming and Network Information
 
 # Status
 
