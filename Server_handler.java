@@ -8,38 +8,51 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
-public class Server_handler extends Thread {
+public class Server_handler extends Thread{
 
 	/**
 	* Class variables
 	**/
 	public static final int ERROR = 1;
-	private Socket socket;
+
 	private String name;
+	private Socket socket;
 	private PrintWriter server_output;
 	private BufferedReader client_input;
-	private final Server_handler[] threads;
-	private int maxClientsCount;
+	private int client_id;
 
 	/**
-	* Constructor method
+	* Constructor method - setter
 	**/
-	public Server_handler(String name, Socket socket, Server_handler[] threads) {
+	public Server_handler(String name, Socket socket, int id) {
 		this.name = "< " + name + " > ";
 		this.socket = socket;
-		this.threads = threads;
-		maxClientsCount = threads.length;
+		this.client_id = id;
+		Server.add_client(this, id);
+	}
+	
+	/**
+	* Getter methods
+	**/
+	public PrintWriter getWriter() {
+		return server_output;
+	}
+
+	public int get_client_id() {
+		return client_id;
 	}
 
 	/**
 	* Standard run method to start thread functionality
 	**/
 	public void run() {
-		System.out.println("I am running");
-
-		//update the client threads list so as to have a record of all active clients
-		int maxClientsCount = this.maxClientsCount;
-		Server_handler[] threads = this.threads;
+		System.out.println("client" + this.name + "is running");
+		
+		// show client list
+		Server_handler[] client_list = Server.get_list();
+		for (int i = 0; i < client_list.length; i++) {
+			System.out.println(client_list[i]);
+		}
 
 		//relay messages
 		try {
@@ -48,9 +61,7 @@ public class Server_handler extends Thread {
 
 			while(!socket.isClosed()) {
 				String input = client_input.readLine();
-				//echo message back to user
-				System.out.println(name + input);
-				server_output.println(name + input);	
+				Broadcast(input);	
 			} 
 		} catch (IOException e) {
 			System.out.println("ERROR: Cannot send or recieve messages");
@@ -58,14 +69,27 @@ public class Server_handler extends Thread {
 		}
 	}
 
+	/**
+	* Messaging functions
+	**/
+
+	// Send message to all clients
 	public void Broadcast(String message) {
-		for(Server_handler thread: threads) {
-			thread.getWriter().println(message);
+		synchronized (this) {
+			Server_handler[] client_list = Server.get_list();
+ 		
+			for (int i = 0; i < client_list.length; i++) {
+ 				if((client_list[i] != null) && (client_list[i] != this)) {
+					client_list[i].getWriter().println(this.name + message);
+				}	
+ 			}
 		}
 	}
 
-	public PrintWriter getWriter() {
-		return server_output;
-	} 
+	// Send message back to self
+	public void Echo(String message) {
+		server_output.println(this.name + message);
+	}
 
+	
 }

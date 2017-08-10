@@ -13,11 +13,13 @@ public class Server {
 	public static final int ERROR = -1;
 	public static final int SERVER_PORT = 1990;
 	public static ServerSocket serverSocket = null;
+
 	private static final int maxClientsCount = 10;
-	private static final Server_handler[] threads = new Server_handler[maxClientsCount];
+	private static Server_handler[] client_connections = null;
 
 
 	public static void main(String[] args) {
+		client_connections = new Server_handler[10];
 		
 		/**
 		* Opens server socket port to listen (server comes online)
@@ -43,11 +45,11 @@ public class Server {
 			try {
 				Socket socket = serverSocket.accept();
 				System.out.println("The server has just accepted a new client");
-			
-				//check threads array
-				for(int i = 0; i < maxClientsCount; i++) {
-					if(threads[i] == null) {
-
+		
+				//check for empty spot on client_connections	
+				for(int i = 0; i < 10; i++) {
+					if(client_connections[i] == null) {
+				
 						//get screen name
 						PrintWriter name_prompt = new PrintWriter(socket.getOutputStream(), true);
                                  		BufferedReader prompt_return = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -55,7 +57,7 @@ public class Server {
                                   		String screen_name = prompt_return.readLine();
 
 						//start a thead to handle this client connection
-						(threads[i] = new Server_handler(screen_name, socket, threads)).start();
+						(client_connections[i] = new Server_handler(screen_name, socket, i)).start();
 						break;
 					}
 				}
@@ -63,6 +65,15 @@ public class Server {
 				System.err.println("An error has occured in accepting new client connection");
 			}
 		}
+	}
+	
+
+	public static void add_client(Server_handler newest_client, int i) {
+		client_connections[i] = newest_client;
+	}
+
+	public static Server_handler[] get_list() {
+		return client_connections;
 	}
 
 }
