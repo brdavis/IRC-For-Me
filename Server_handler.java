@@ -2,6 +2,20 @@
 * This is a server-side thread-based event handler 
 * This class implements the functionality of the server for each client connection
 * The primary functions are getting messages from the clients and sending messages to the clients
+*
+* The IRC protocol commands implemented in this application are:
+* 
+* /HELP - shows a general list of commands to client
+* /LIST - shows a list of all current channels
+* /JOIN - enables client to join a channel
+* /LEAVE - enables client to leave a channel
+* /QUIT - enables client to exit IRC-for-me application
+* /NICK - enables client to change its screen name
+* /AWAY - enables client to create an away message
+* /WHOIS - displays information about a client in the channel
+* /KICK - enables channel owner to kick out a client from the channel
+* /TOPIC - enables channel owner to change the topic of the channel 
+*
 **/
 
 import java.util.*;
@@ -58,10 +72,15 @@ public class Server_handler extends Thread{
 		try {
 			server_output = new PrintWriter(socket.getOutputStream(), true);
 			client_input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+			
+			//IRC command directory
 			while(!socket.isClosed()) {
 				String input = client_input.readLine();
-				Broadcast(input);	
+				if (input.startsWith("/HELP")) {
+					Help();
+				} else {
+					Broadcast(input);
+				}	
 			} 
 		} catch (IOException e) {
 			System.out.println("ERROR: Cannot send or recieve messages");
@@ -70,7 +89,30 @@ public class Server_handler extends Thread{
 	}
 
 	/**
-	* Messaging functions
+	* IRC command functions
+	**/
+
+	// sends a list back to client of all the different IRC commands
+	public void Help() {
+		String help_menu = "HELP MENU\n" +
+				   "ALL AVAILABLE IRC COMMANDS\n" +
+				   "/HELP - shows a general list of commands to client\n" +
+				   "/LIST - shows a list of all current channels\n" + 
+				   "/JOIN - enables client to join a channel\n" + 
+ 			 	   "/LEAVE - enables client to leave a channel\n" +
+				   "/QUIT - enables client to exit IRC-for-me application\n" +
+				   "/NICK - enables client to change its screen name\n" + 
+				   "/AWAY - enables client to create an away message\n" + 
+				   "/WHOIS - displays information about a client in the channel\n" +
+				   "/KICK- enables channel owner to kick out a client from the channel\n" +
+				   "/TOPIC - enables channel owner to change the topic of the channel";
+
+		Self_message(help_menu);
+	} 
+	
+
+	/**
+	* Message sending functions
 	**/
 
 	// Send message to all clients
@@ -87,8 +129,8 @@ public class Server_handler extends Thread{
 	}
 
 	// Send message back to self
-	public void Echo(String message) {
-		server_output.println(this.name + message);
+	public void Self_message(String message) {
+		server_output.println(message);
 	}
 
 	
