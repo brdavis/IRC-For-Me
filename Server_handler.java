@@ -100,6 +100,8 @@ public class Server_handler extends Thread{
 					Help();
 			//	} else if (input.startsWith("/NICK") {
 			//		NICK();
+				} else if (input.startsWith("/JOIN")) {
+					JOIN();
 				} else {
 					Broadcast(input);
 				}	
@@ -132,6 +134,15 @@ public class Server_handler extends Thread{
 		Self_message(help_menu);
 	} 
 	
+	// The join() function accomplishes two functions: 
+	// 1) Scans list of channel request and allows client to join active channel or 
+	// 2) If no such channel request exists a new channel is created and the requesting client is designated as the channel operator 
+	public void JOIN() {
+		//Implementing function 2
+		Server_channel new_channel = new Server_channel("Test_channel_name", this);
+		String name = new_channel.get_channel_name();
+		Self_message(name); 		
+	}
 	// Changes the screen name of the client
 //	pubic void NICK_part_one() {
 //		String get_nick = "What would you like to change your name to?";
