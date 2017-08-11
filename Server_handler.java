@@ -21,14 +21,14 @@
 import java.util.*;
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class Server_handler extends Thread{
+        public static final int ERROR = 1;
 
 	/**
 	* Class variables
 	**/
-	public static final int ERROR = 1;
-
 	private String name;
 	private Socket socket;
 	private PrintWriter server_output;
@@ -36,11 +36,18 @@ public class Server_handler extends Thread{
 	private int client_id;
 
 	/**
+	* Channel bookkeeping
+	**/
+	private ArrayList<Server_channel> channels;
+	private Server_channel current_channel;	
+	
+	/**
 	* Constructor method 
 	**/
 	public Server_handler(Socket socket, int id) {
 		this.socket = socket;
 		this.client_id = id;
+		this.channels = new ArrayList<Server_channel>();
 		Server.add_client(this, id);
 	}
 
@@ -57,6 +64,14 @@ public class Server_handler extends Thread{
 			System.out.println("ERROR: Cannot set screen name");
 			System.exit(ERROR);
 		}
+	}
+
+	public void set_active_channel(Server_channel new_channel) {
+		this.current_channel = new_channel;
+		channels.add(new_channel);
+		
+		//print
+		Self_message(this.current_channel.get_channel_name());
 	}
 	
 	/**
@@ -97,7 +112,7 @@ public class Server_handler extends Thread{
 			while(!socket.isClosed()) {
 				String input = client_input.readLine();
 				if (input.startsWith("/HELP")) {
-					Help();
+					HELP();
 			//	} else if (input.startsWith("/NICK") {
 			//		NICK();
 				} else if (input.startsWith("/JOIN")) {
@@ -116,8 +131,8 @@ public class Server_handler extends Thread{
 	* IRC command functions
 	**/
 
-	// sends a list back to client of all the different IRC commands
-	public void Help() {
+	// The HELP() function sends delineated list of the IRC commands back to the client
+	public void HELP() {
 		String help_menu = "HELP MENU\n" +
 				   "ALL AVAILABLE IRC COMMANDS\n" +
 				   "/HELP - shows a general list of commands to client\n" +
@@ -134,22 +149,20 @@ public class Server_handler extends Thread{
 		Self_message(help_menu);
 	} 
 	
-	// The join() function accomplishes two functions: 
+	// The JOIN() function accomplishes two functions: 
 	// 1) Scans list of channel request and allows client to join active channel or 
 	// 2) If no such channel request exists a new channel is created and the requesting client is designated as the channel operator 
 	public void JOIN() {
 		//Implementing function 2
 		Server_channel new_channel = new Server_channel("Test_channel_name", this);
+		set_active_channel(new_channel);
 		String name = new_channel.get_channel_name();
-		Self_message(name); 		
+		Self_message(name);
+		ArrayList<Server_handler> test_list = new_channel.get_channel_list();
+		for (int i = 0; i < test_list.size(); i++) {
+			Self_message(test_list.get(i).get_name()); 		
+		}
 	}
-	// Changes the screen name of the client
-//	pubic void NICK_part_one() {
-//		String get_nick = "What would you like to change your name to?";
-//		Self_message(get_nick); // needs to be private message to self to get response directly back to this method
-//		set_name(new_nick);
-//	}
-
 
 	/**
 	* Message sending functions
