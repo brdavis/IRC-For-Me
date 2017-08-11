@@ -14,9 +14,15 @@ public class Server {
 	public static final int SERVER_PORT = 1990;
 	public static ServerSocket serverSocket = null;
 
+	/**
+	* Bookkeeping information about client connections
+	**/
+	// All client connections
 	private static final int maxClientsCount = 10;
 	private static Server_handler[] client_connections = null;
 
+	// Array for channel objects
+//	private static Server_channel[] channels = null;
 
 	public static void main(String[] args) {
 		client_connections = new Server_handler[10];
@@ -49,15 +55,8 @@ public class Server {
 				//check for empty spot on client_connections	
 				for(int i = 0; i < 10; i++) {
 					if(client_connections[i] == null) {
-				
-						//get screen name
-						PrintWriter name_prompt = new PrintWriter(socket.getOutputStream(), true);
-                                 		BufferedReader prompt_return = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                                  		name_prompt.println("Enter a screen name");
-                                  		String screen_name = prompt_return.readLine();
-
 						//start a thead to handle this client connection
-						(client_connections[i] = new Server_handler(screen_name, socket, i)).start();
+						(client_connections[i] = new Server_handler(socket, i)).start();
 						break;
 					}
 				}

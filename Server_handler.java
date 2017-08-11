@@ -5,7 +5,7 @@
 *
 * The IRC protocol commands implemented in this application are:
 * 
-* /HELP - shows a general list of commands to client
+* /HELP - shows a general list of commands to client -- implemented
 * /LIST - shows a list of all current channels
 * /JOIN - enables client to join a channel
 * /LEAVE - enables client to leave a channel
@@ -36,13 +36,27 @@ public class Server_handler extends Thread{
 	private int client_id;
 
 	/**
-	* Constructor method - setter
+	* Constructor method 
 	**/
-	public Server_handler(String name, Socket socket, int id) {
-		this.name = "< " + name + " > ";
+	public Server_handler(Socket socket, int id) {
 		this.socket = socket;
 		this.client_id = id;
 		Server.add_client(this, id);
+	}
+
+	/**
+	* Setter methods
+	**/
+	public void set_name() {
+		try {
+			String name_prompt = "Enter your preferred screen name";
+			server_output.println(name_prompt);
+			String screen_name = client_input.readLine();
+			this.name = "< " + screen_name + " > ";
+		} catch (IOException e) {
+			System.out.println("ERROR: Cannot set screen name");
+			System.exit(ERROR);
+		}
 	}
 	
 	/**
@@ -54,6 +68,10 @@ public class Server_handler extends Thread{
 
 	public int get_client_id() {
 		return client_id;
+	}
+
+	public String get_name() {
+		return name;
 	}
 
 	/**
@@ -73,11 +91,15 @@ public class Server_handler extends Thread{
 			server_output = new PrintWriter(socket.getOutputStream(), true);
 			client_input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			
+			set_name();
+
 			//IRC command directory
 			while(!socket.isClosed()) {
 				String input = client_input.readLine();
 				if (input.startsWith("/HELP")) {
 					Help();
+			//	} else if (input.startsWith("/NICK") {
+			//		NICK();
 				} else {
 					Broadcast(input);
 				}	
@@ -110,6 +132,13 @@ public class Server_handler extends Thread{
 		Self_message(help_menu);
 	} 
 	
+	// Changes the screen name of the client
+//	pubic void NICK_part_one() {
+//		String get_nick = "What would you like to change your name to?";
+//		Self_message(get_nick); // needs to be private message to self to get response directly back to this method
+//		set_name(new_nick);
+//	}
+
 
 	/**
 	* Message sending functions
@@ -132,6 +161,4 @@ public class Server_handler extends Thread{
 	public void Self_message(String message) {
 		server_output.println(message);
 	}
-
-	
 }
