@@ -19,6 +19,7 @@ public class Server_channel {
 		this.channel_operator = client;
 		this.channel_list = new ArrayList<Server_handler>();
 		channel_list.add(channel_operator);
+		System.out.println("I am created");
 	}
 	
 	
@@ -27,9 +28,14 @@ public class Server_channel {
 	**/
 	
 	// Add a client to the channel
-//	public void add_client(Server_handler client) {
-//		channel_list		
-//	}
+	public void join_list(Server_handler client) {
+		for(int i = 0; i < channel_list.size(); i++) {
+			if (channel_list.get(i) == client) {
+				return;
+			}
+		}	
+		this.channel_list.add(client);		
+	}
 
 	// Remove a client from the channel
 

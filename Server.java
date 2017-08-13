@@ -7,6 +7,7 @@
 import java.net.*;
 import java.util.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class Server {
 
@@ -21,12 +22,27 @@ public class Server {
 	private static final int maxClientsCount = 10;
 	private static Server_handler[] client_connections = null;
 
-	// Array for channel objects
-//	private static Server_channel[] channels = null;
+	// Establish an ArrayList for tracking all clients on IRC-For-ME
+	// This will be used if the client is not a member of any channels
+	private static ArrayList<Server_handler> all_clients_list = new ArrayList<Server_handler>();
 
+	//ArrayList for all active channels
+	public static ArrayList<Server_channel> all_irc_channels = new ArrayList<Server_channel>();
+
+	public static void add_irc_channel(Server_channel new_channel) {
+		all_irc_channels.add(new_channel);
+		for(int i = 0; i < all_irc_channels.size(); i++) {
+			System.out.println(all_irc_channels.get(i).get_channel_name());
+		}
+	}
+
+	public static ArrayList<Server_channel> get_all_irc_channels() {
+		return all_irc_channels;
+	}
+	
 	public static void main(String[] args) {
 		client_connections = new Server_handler[10];
-		
+
 		/**
 		* Opens server socket port to listen (server comes online)
 		**/
@@ -50,7 +66,7 @@ public class Server {
 		while(true) {
 			try {
 				Socket socket = serverSocket.accept();
-				System.out.println("The server has just accepted a new client");
+				System.out.println("The server has just accepted a new client request");
 		
 				//check for empty spot on client_connections	
 				for(int i = 0; i < 10; i++) {

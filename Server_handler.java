@@ -66,12 +66,9 @@ public class Server_handler extends Thread{
 		}
 	}
 
-	public void set_active_channel(Server_channel new_channel) {
+	public void set_current_channel(Server_channel new_channel) {
 		this.current_channel = new_channel;
 		channels.add(new_channel);
-		
-		//print
-		Self_message(this.current_channel.get_channel_name());
 	}
 	
 	/**
@@ -153,14 +150,39 @@ public class Server_handler extends Thread{
 	// 1) Scans list of channel request and allows client to join active channel or 
 	// 2) If no such channel request exists a new channel is created and the requesting client is designated as the channel operator 
 	public void JOIN() {
-		//Implementing function 2
-		Server_channel new_channel = new Server_channel("Test_channel_name", this);
-		set_active_channel(new_channel);
-		String name = new_channel.get_channel_name();
-		Self_message(name);
-		ArrayList<Server_handler> test_list = new_channel.get_channel_list();
-		for (int i = 0; i < test_list.size(); i++) {
-			Self_message(test_list.get(i).get_name()); 		
+		synchronized (this) {	
+			//get list of all channels from Server
+			ArrayList<Server_channel> all_channels = Server.get_all_irc_channels();
+			//check if channel already exists
+			for(int j = 0; j < all_channels.size(); j++) {
+				//if channel exists, join the channel
+				if(all_channels.get(j).get_channel_name() == "Test_channel_name") {
+					(all_channels.get(j)).join_list(this);
+			 		this.current_channel = all_channels.get(j);
+					//print details
+					ArrayList<Server_handler> test_list = all_channels.get(j).get_channel_list();
+					for (int i = 0; i < test_list.size(); i++) {
+						Self_message(test_list.get(i).get_name());
+					} 
+				return;
+				}
+			}
+
+			// If channel does not exit, create a new channel
+			// Make new channel object by creating name and making self the operator of the channel
+			Server_channel new_channel = new Server_channel("Test_channel_name", this);
+			// Add the new channel to the list of channels maintained by the Server
+			Server.add_irc_channel(new_channel);
+			// Set current_channel for self to this new channel
+			set_current_channel(new_channel);
+
+			//print details
+			String name = new_channel.get_channel_name();
+			Self_message("I am " + this.name + " and I am in channel " + name + "\n The other people in the channel are: \n");
+			ArrayList<Server_handler> test_list = new_channel.get_channel_list();
+			for (int i = 0; i < test_list.size(); i++) {
+				Self_message(i +" : " + test_list.get(i).get_name());
+			}				
 		}
 	}
 
@@ -171,13 +193,22 @@ public class Server_handler extends Thread{
 	// Send message to all clients
 	public void Broadcast(String message) {
 		synchronized (this) {
-			Server_handler[] client_list = Server.get_list();
- 		
-			for (int i = 0; i < client_list.length; i++) {
- 				if((client_list[i] != null) && (client_list[i] != this)) {
-					client_list[i].getWriter().println(this.name + message);
-				}	
- 			}
+	//		Server_handler[] client_list = Server.get_list();
+ 			
+			// switch to this for channels
+			ArrayList<Server_handler> client_list= this.current_channel.get_channel_list();
+			
+			for(int i = 0; i < client_list.size(); i++) {
+				if(client_list.get(i) != this) {
+					client_list.get(i).getWriter().println(this.name + message);
+				}
+			}	
+
+	//		for (int i = 0; i < client_list.length; i++) {
+ 	//			if((client_list[i] != null) && (client_list[i] != this)) {
+	//				client_list[i].getWriter().println(this.name + message);
+	//			}	
+ 	//		}
 		}
 	}
 
