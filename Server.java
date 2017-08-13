@@ -18,13 +18,9 @@ public class Server {
 	/**
 	* Bookkeeping information about client connections
 	**/
-	// All client connections
-	private static final int maxClientsCount = 10;
-	private static Server_handler[] client_connections = null;
 
-	// Establish an ArrayList for tracking all clients on IRC-For-ME
-	// This will be used if the client is not a member of any channels
-	private static ArrayList<Server_handler> all_clients_list = new ArrayList<Server_handler>();
+	// Establish an ArrayList for tracking all clients connected to IRC-For-ME Server
+	private static ArrayList<Server_handler> client_connections = new ArrayList<Server_handler>();
 
 	//ArrayList for all active channels
 	public static ArrayList<Server_channel> all_irc_channels = new ArrayList<Server_channel>();
@@ -41,8 +37,6 @@ public class Server {
 	}
 	
 	public static void main(String[] args) {
-		client_connections = new Server_handler[10];
-
 		/**
 		* Opens server socket port to listen (server comes online)
 		**/
@@ -57,7 +51,6 @@ public class Server {
 
 	}
 
-
 	/**
 	* Accepts new client connection requests continuously while server port is online
 	* Transfers accepted clients to the Server_handler
@@ -66,16 +59,14 @@ public class Server {
 		while(true) {
 			try {
 				Socket socket = serverSocket.accept();
+				
 				System.out.println("The server has just accepted a new client request");
 		
-				//check for empty spot on client_connections	
-				for(int i = 0; i < 10; i++) {
-					if(client_connections[i] == null) {
-						//start a thead to handle this client connection
-						(client_connections[i] = new Server_handler(socket, i)).start();
-						break;
-					}
-				}
+				int i = client_connections.size() + 1;
+				Server_handler new_client = new Server_handler(socket, i);
+				new_client.start();
+				client_connections.add(new_client);
+			
 			} catch(IOException e) {
 				System.err.println("An error has occured in accepting new client connection");
 			}
@@ -84,10 +75,10 @@ public class Server {
 	
 
 	public static void add_client(Server_handler newest_client, int i) {
-		client_connections[i] = newest_client;
+		client_connections.add(newest_client);
 	}
 
-	public static Server_handler[] get_list() {
+	public static ArrayList<Server_handler> get_list() {
 		return client_connections;
 	}
 

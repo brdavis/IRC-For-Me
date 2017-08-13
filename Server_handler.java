@@ -92,10 +92,10 @@ public class Server_handler extends Thread{
 	public void run() {
 		System.out.println("client" + this.name + "is running");
 		
-		// show client list
-		Server_handler[] client_list = Server.get_list();
-		for (int i = 0; i < client_list.length; i++) {
-			System.out.println(client_list[i]);
+		//show client list
+		ArrayList<Server_handler> client_list = Server.get_list();
+		for(int i = 0; i < client_list.size(); i++) {
+			System.out.println(client_list.get(i));
 		}
 
 		//relay messages
@@ -159,12 +159,7 @@ public class Server_handler extends Thread{
 				if(all_channels.get(j).get_channel_name() == "Test_channel_name") {
 					(all_channels.get(j)).join_list(this);
 			 		this.current_channel = all_channels.get(j);
-					//print details
-					ArrayList<Server_handler> test_list = all_channels.get(j).get_channel_list();
-					for (int i = 0; i < test_list.size(); i++) {
-						Self_message(test_list.get(i).get_name());
-					} 
-				return;
+					return;
 				}
 			}
 
@@ -176,13 +171,6 @@ public class Server_handler extends Thread{
 			// Set current_channel for self to this new channel
 			set_current_channel(new_channel);
 
-			//print details
-			String name = new_channel.get_channel_name();
-			Self_message("I am " + this.name + " and I am in channel " + name + "\n The other people in the channel are: \n");
-			ArrayList<Server_handler> test_list = new_channel.get_channel_list();
-			for (int i = 0; i < test_list.size(); i++) {
-				Self_message(i +" : " + test_list.get(i).get_name());
-			}				
 		}
 	}
 
@@ -193,22 +181,20 @@ public class Server_handler extends Thread{
 	// Send message to all clients
 	public void Broadcast(String message) {
 		synchronized (this) {
-	//		Server_handler[] client_list = Server.get_list();
- 			
-			// switch to this for channels
-			ArrayList<Server_handler> client_list= this.current_channel.get_channel_list();
-			
-			for(int i = 0; i < client_list.size(); i++) {
-				if(client_list.get(i) != this) {
-					client_list.get(i).getWriter().println(this.name + message);
-				}
-			}	
-
-	//		for (int i = 0; i < client_list.length; i++) {
- 	//			if((client_list[i] != null) && (client_list[i] != this)) {
-	//				client_list[i].getWriter().println(this.name + message);
-	//			}	
- 	//		}
+			ArrayList<Server_handler> client_list;
+			if (this.current_channel != null) { 
+				client_list = this.current_channel.get_channel_list();
+	                         for(int i = 0; i < client_list.size(); i++) {
+                                 	if(client_list.get(i) != this) {
+                                        	 client_list.get(i).getWriter().println(this.name + message);
+                                 	}       
+                        	 }	 			
+			} else {
+				client_list = Server.get_list();
+				Self_message("You are currently not in an irc-channel");
+				Self_message("To proceed, please join a channel");
+			}
+	
 		}
 	}
 
