@@ -6,12 +6,12 @@
 * The IRC protocol commands implemented in this application are:
 * 
 * /HELP - shows a general list of commands to client -- implemented
-* /LIST - shows a list of all current channels
-* /JOIN - enables client to join a channel
+* /JOIN - enables client to join a channel -- WIP
+* /LIST - shows a list of all current channels -- WIP
 * /LEAVE - enables client to leave a channel
 * /QUIT - enables client to exit IRC-for-me application
-* /NICK - enables client to change its screen name
-* /AWAY - enables client to create an away message
+* /NICK - enables client to change its screen name -- implemented
+* /AWAY - enables client to create an away message -- implemented
 * /WHOIS - displays information about a client in the channel
 * /KICK - enables channel owner to kick out a client from the channel
 * /TOPIC - enables channel owner to change the topic of the channel 
@@ -33,7 +33,7 @@ public class Server_handler extends Thread{
 	private Socket socket;
 	private PrintWriter server_output;
 	private BufferedReader client_input;
-	private int client_id;
+	private Boolean is_away;
 
 	/**
 	* Channel bookkeeping
@@ -44,11 +44,11 @@ public class Server_handler extends Thread{
 	/**
 	* Constructor method 
 	**/
-	public Server_handler(Socket socket, int id) {
+	public Server_handler(Socket socket) {
 		this.socket = socket;
-		this.client_id = id;
 		this.channels = new ArrayList<Server_channel>();
-		Server.add_client(this, id);
+		Server.add_client(this);
+		this.is_away = false;
 	}
 
 	/**
@@ -66,20 +66,17 @@ public class Server_handler extends Thread{
 		}
 	}
 
+	/**
+	* Getter methods
+	**/
+
 	public void set_current_channel(Server_channel new_channel) {
 		this.current_channel = new_channel;
 		channels.add(new_channel);
 	}
 	
-	/**
-	* Getter methods
-	**/
 	public PrintWriter getWriter() {
 		return server_output;
-	}
-
-	public int get_client_id() {
-		return client_id;
 	}
 
 	public String get_name() {
@@ -110,10 +107,15 @@ public class Server_handler extends Thread{
 				String input = client_input.readLine();
 				if (input.startsWith("/HELP")) {
 					HELP();
-			//	} else if (input.startsWith("/NICK") {
-			//		NICK();
 				} else if (input.startsWith("/JOIN")) {
-					JOIN();
+					String new_channel = "test";
+					JOIN(new_channel);
+				} else if (input.startsWith("/LIST")) {
+					LIST();
+				} else if (input.startsWith("/NICK")) {
+					NICK();
+				} else if (input.startsWith("/AWAY")) {
+					AWAY();
 				} else {
 					Broadcast(input);
 				}	
@@ -149,29 +151,63 @@ public class Server_handler extends Thread{
 	// The JOIN() function accomplishes two functions: 
 	// 1) Scans list of channel request and allows client to join active channel or 
 	// 2) If no such channel request exists a new channel is created and the requesting client is designated as the channel operator 
-	public void JOIN() {
-		synchronized (this) {	
+	public void JOIN(String name) {
+		synchronized (this) {
+			String channel_request = name;	
 			//get list of all channels from Server
 			ArrayList<Server_channel> all_channels = Server.get_all_irc_channels();
 			//check if channel already exists
 			for(int j = 0; j < all_channels.size(); j++) {
 				//if channel exists, join the channel
-				if(all_channels.get(j).get_channel_name() == "Test_channel_name") {
+				if(all_channels.get(j).get_channel_name() == channel_request) {
 					(all_channels.get(j)).join_list(this);
-			 		this.current_channel = all_channels.get(j);
+			 		//this.current_channel = all_channels.get(j);
+					set_current_channel(all_channels.get(j));
 					return;
 				}
 			}
 
 			// If channel does not exit, create a new channel
 			// Make new channel object by creating name and making self the operator of the channel
-			Server_channel new_channel = new Server_channel("Test_channel_name", this);
+			Server_channel new_channel = new Server_channel(channel_request, this);
 			// Add the new channel to the list of channels maintained by the Server
 			Server.add_irc_channel(new_channel);
 			// Set current_channel for self to this new channel
 			set_current_channel(new_channel);
 
 		}
+	}
+
+	// sends a list of all of the acitve channels on the irc back to the client
+	public void LIST() {
+	   synchronized (this) {
+		//get the list of all the active channels from the Server
+		ArrayList<Server_channel> list = Server.get_all_irc_channels();
+		
+		// Check if there are active channels, if there are no active channels tell the client that, 
+		// Otherwise, send back the list of active channels
+		if (list.size() != 0) {
+			Self_message("IRC-FOR-ME channels: ");
+			for (int i = 0; i < list.size(); i++) {
+				String channel_name = list.get(i).get_channel_name();
+				Self_message(i + " : " + channel_name);
+			}	
+		} else {
+			Self_message("There are currently no active channels on IRC-FOR-ME");
+		}
+	   }			
+	}
+
+	// Changes your screen name
+	public void NICK() {
+		set_name();
+	}
+
+	// presents an away message
+        // Flips your status from its previous status
+	// If you were active you will now be away, if you were away you will now be active 
+	public void AWAY() {
+		this.is_away = (!is_away);
 	}
 
 	/**
@@ -185,9 +221,14 @@ public class Server_handler extends Thread{
 			if (this.current_channel != null) { 
 				client_list = this.current_channel.get_channel_list();
 	                         for(int i = 0; i < client_list.size(); i++) {
-                                 	if(client_list.get(i) != this) {
-                                        	 client_list.get(i).getWriter().println(this.name + message);
-                                 	}       
+                                	if (client_list.get(i) != this) {
+						if (client_list.get(i).is_away) {
+							this.getWriter().println("I am currently away from my computer.\n" +
+										 "Pleave leave a message");
+						} else {
+				     	 		client_list.get(i).getWriter().println(this.name + message);
+                                 		}
+					}       
                         	 }	 			
 			} else {
 				client_list = Server.get_list();

@@ -19,7 +19,7 @@ public class Server_channel {
 		this.channel_operator = client;
 		this.channel_list = new ArrayList<Server_handler>();
 		channel_list.add(channel_operator);
-		System.out.println("I am created");
+		System.out.println("Channel" + this.channel_name + "was created");
 	}
 	
 	

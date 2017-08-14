@@ -16,20 +16,42 @@ public class Server {
 	public static ServerSocket serverSocket = null;
 
 	/**
-	* Bookkeeping information about client connections
+	*
+	* 	      Bookkeeping Information
+	*
+	* The Server tracks all active client connections 
+	*                      and
+	*             all the active channels
+	*
 	**/
 
-	// Establish an ArrayList for tracking all clients connected to IRC-For-ME Server
+	/**
+	*  ArrayList to track all clients connected to IRC-For-ME
+	**/ 
 	private static ArrayList<Server_handler> client_connections = new ArrayList<Server_handler>();
 
-	//ArrayList for all active channels
-	public static ArrayList<Server_channel> all_irc_channels = new ArrayList<Server_channel>();
 
+	/**
+	* Getters for client_connections
+	**/
+	public static void add_client(Server_handler newest_client) {
+		client_connections.add(newest_client);
+ 	}
+ 
+	public static ArrayList<Server_handler> get_list() {
+ 		return client_connections;
+	}
+
+	/**
+	* ArrayList to track all active channels
+	**/
+	private static ArrayList<Server_channel> all_irc_channels = new ArrayList<Server_channel>();
+
+	/**
+	* Getters for all_irc_channels
+	**/
 	public static void add_irc_channel(Server_channel new_channel) {
 		all_irc_channels.add(new_channel);
-		for(int i = 0; i < all_irc_channels.size(); i++) {
-			System.out.println(all_irc_channels.get(i).get_channel_name());
-		}
 	}
 
 	public static ArrayList<Server_channel> get_all_irc_channels() {
@@ -62,8 +84,7 @@ public class Server {
 				
 				System.out.println("The server has just accepted a new client request");
 		
-				int i = client_connections.size() + 1;
-				Server_handler new_client = new Server_handler(socket, i);
+				Server_handler new_client = new Server_handler(socket);
 				new_client.start();
 				client_connections.add(new_client);
 			
@@ -72,14 +93,4 @@ public class Server {
 			}
 		}
 	}
-	
-
-	public static void add_client(Server_handler newest_client, int i) {
-		client_connections.add(newest_client);
-	}
-
-	public static ArrayList<Server_handler> get_list() {
-		return client_connections;
-	}
-
 }
