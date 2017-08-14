@@ -13,6 +13,7 @@ public class Client_handler extends Thread {
 	public static final int ERROR = -1;
 	private PrintWriter client_message;
 
+
 	/**
 	* Constructor method
 	**/

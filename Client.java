@@ -36,7 +36,7 @@ public class Client {
 		}		
 
 		/**
-		* Create and start the Client_handler for sending and recieving messages
+		* Create and start the Client_handler for recieving messages
 		**/
 		Client_handler client_messenger = new Client_handler(client_output);
 		client_messenger.setDaemon(true);
