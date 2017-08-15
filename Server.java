@@ -45,12 +45,12 @@ public class Server {
 	/**
 	* ArrayList to track all active channels
 	**/
-	private static ArrayList<Server_channel> all_irc_channels = new ArrayList<Server_channel>();
+	public static ArrayList<Server_channel> all_irc_channels = new ArrayList<Server_channel>();
 
 	/**
 	* Getters for all_irc_channels
 	**/
-	public static void add_irc_channel(Server_channel new_channel) {
+	public static void add_channel(Server_channel new_channel) {
 		all_irc_channels.add(new_channel);
 	}
 

@@ -6,8 +6,8 @@
 * The IRC protocol commands implemented in this application are:
 * 
 * /HELP - shows a general list of commands to client -- implemented
-* /JOIN - enables client to join a channel -- WIP
-* /LIST - shows a list of all current channels -- WIP
+* /JOIN - enables client to join a channel -- implemented
+* /LIST - shows a list of all current channels -- implemented
 * /LEAVE - enables client to leave a channel
 * /QUIT - enables client to exit IRC-for-me application
 * /NICK - enables client to change its screen name -- implemented
@@ -108,8 +108,7 @@ public class Server_handler extends Thread{
 				if (input.startsWith("/HELP")) {
 					HELP();
 				} else if (input.startsWith("/JOIN")) {
-					String new_channel = "test";
-					JOIN(new_channel);
+					JOIN(input);
 				} else if (input.startsWith("/LIST")) {
 					LIST();
 				} else if (input.startsWith("/NICK")) {
@@ -151,30 +150,38 @@ public class Server_handler extends Thread{
 	// The JOIN() function accomplishes two functions: 
 	// 1) Scans list of channel request and allows client to join active channel or 
 	// 2) If no such channel request exists a new channel is created and the requesting client is designated as the channel operator 
-	public void JOIN(String name) {
+	public void JOIN(String input) {
 		synchronized (this) {
-			String channel_request = name;	
-			//get list of all channels from Server
+			// Get name for channel request from client
+			String channel_request = input;
+			if (channel_request.length() > 6) {
+				channel_request = channel_request.substring(6).trim();
+			} else {
+				Self_message("Please try again with the format /JOIN <name>");
+				return;
+			}
+	
 			ArrayList<Server_channel> all_channels = Server.get_all_irc_channels();
+
 			//check if channel already exists
 			for(int j = 0; j < all_channels.size(); j++) {
 				//if channel exists, join the channel
-				if(all_channels.get(j).get_channel_name() == channel_request) {
-					(all_channels.get(j)).join_list(this);
-			 		//this.current_channel = all_channels.get(j);
-					set_current_channel(all_channels.get(j));
+				//String channel_name = all_channels.get(j).channel_name;
+				//if(channel_name.equals(channel_request)) {
+				Server_channel channel = all_channels.get(j);
+				if(channel.get_channel_name().equals(channel_request)) {
+					channel.join_list(this);
+					set_current_channel(channel);
+					//all_channels.get(j).join_list(this);
+					//set_current_channel(all_channels.get(j));
+					Self_message("Found a match, already existing channel");
 					return;
 				}
 			}
 
 			// If channel does not exit, create a new channel
-			// Make new channel object by creating name and making self the operator of the channel
 			Server_channel new_channel = new Server_channel(channel_request, this);
-			// Add the new channel to the list of channels maintained by the Server
-			Server.add_irc_channel(new_channel);
-			// Set current_channel for self to this new channel
 			set_current_channel(new_channel);
-
 		}
 	}
 
@@ -183,14 +190,14 @@ public class Server_handler extends Thread{
 	   synchronized (this) {
 		//get the list of all the active channels from the Server
 		ArrayList<Server_channel> list = Server.get_all_irc_channels();
-		
+
 		// Check if there are active channels, if there are no active channels tell the client that, 
 		// Otherwise, send back the list of active channels
 		if (list.size() != 0) {
 			Self_message("IRC-FOR-ME channels: ");
 			for (int i = 0; i < list.size(); i++) {
 				String channel_name = list.get(i).get_channel_name();
-				Self_message(i + " : " + channel_name);
+				Self_message(channel_name);
 			}	
 		} else {
 			Self_message("There are currently no active channels on IRC-FOR-ME");
@@ -217,21 +224,25 @@ public class Server_handler extends Thread{
 	// Send message to all clients
 	public void Broadcast(String message) {
 		synchronized (this) {
-			ArrayList<Server_handler> client_list;
+		//	ArrayList<Server_handler> client_list;
+		//	ArrayList<Server_handler> broadcast_recipients;
+		//	Server_channel the_senders_current_channel = this.current_channel;
+
 			if (this.current_channel != null) { 
-				client_list = this.current_channel.get_channel_list();
-	                         for(int i = 0; i < client_list.size(); i++) {
-                                	if (client_list.get(i) != this) {
-						if (client_list.get(i).is_away) {
+				ArrayList<Server_handler> broadcast_recipients = this.current_channel.get_channel_list();
+	                         for(int i = 0; i < broadcast_recipients.size(); i++) {
+					Server_handler client = broadcast_recipients.get(i);
+                                	if ((client != this) && (client.current_channel == this.current_channel)) {
+						if (client.is_away) {
 							this.getWriter().println("I am currently away from my computer.\n" +
 										 "Pleave leave a message");
 						} else {
-				     	 		client_list.get(i).getWriter().println(this.name + message);
+				     	 		client.getWriter().println(this.name + message);
                                  		}
 					}       
                         	 }	 			
 			} else {
-				client_list = Server.get_list();
+			//	client_list = Server.get_list();
 				Self_message("You are currently not in an irc-channel");
 				Self_message("To proceed, please join a channel");
 			}

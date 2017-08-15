@@ -3,13 +3,13 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 
-public class Server_channel {
+public class Server_channel{
 	//name of channel
-	private static String channel_name;
+	private String channel_name;
 	//client that made the channel now owns it
-	private static Server_handler channel_operator;
+	private Server_handler channel_operator;
 	// array of all clients in channel
-	private static ArrayList<Server_handler> channel_list;
+	private ArrayList<Server_handler> channel_list;
 
 	/**
 	* Constructor method
@@ -19,7 +19,10 @@ public class Server_channel {
 		this.channel_operator = client;
 		this.channel_list = new ArrayList<Server_handler>();
 		channel_list.add(channel_operator);
-		System.out.println("Channel" + this.channel_name + "was created");
+//		Server.add_channel(this);
+		Server.all_irc_channels.add(this);
+		System.out.println("Channel " + this.channel_name + " was created by " + this.channel_operator.get_name());
+		
 	}
 	
 	
