@@ -14,7 +14,8 @@
 * /AWAY - enables client to create an away message -- implemented
 * /WHOIS - displays information about a client in the channel
 * /KICK - enables channel owner to kick out a client from the channel
-* /TOPIC - enables channel owner to change the topic of the channel 
+* /TOPIC - enables channel owner to view or change the topic of the channel -- implemented 
+* /NAMES - shows a list of users in a channel, no channels specified shows all clients 
 *
 **/
 
@@ -33,12 +34,14 @@ public class Server_handler extends Thread{
 	private Socket socket;
 	private PrintWriter server_output;
 	private BufferedReader client_input;
+
 	private Boolean is_away;
+	private String away_message;
 
 	/**
 	* Channel bookkeeping
 	**/
-	private ArrayList<Server_channel> channels;
+//	private ArrayList<Server_channel> channels;
 	private Server_channel current_channel;	
 	
 	/**
@@ -46,9 +49,12 @@ public class Server_handler extends Thread{
 	**/
 	public Server_handler(Socket socket) {
 		this.socket = socket;
-		this.channels = new ArrayList<Server_channel>();
+		//this.channels = new ArrayList<Server_channel>();
 		Server.add_client(this);
 		this.is_away = false;
+		this.away_message = "< AWAY MESSAGE > " + 
+				    "I am currently away from my computer.\n" +
+				    "Pleave leave a message";
 	}
 
 	/**
@@ -72,15 +78,19 @@ public class Server_handler extends Thread{
 
 	public void set_current_channel(Server_channel new_channel) {
 		this.current_channel = new_channel;
-		channels.add(new_channel);
+		//channels.add(new_channel);
 	}
 	
-	public PrintWriter getWriter() {
+	public PrintWriter get_writer() {
 		return server_output;
 	}
 
 	public String get_name() {
 		return name;
+	}
+
+	public String get_away_message() {
+		return away_message;
 	}
 
 	/**
@@ -114,7 +124,9 @@ public class Server_handler extends Thread{
 				} else if (input.startsWith("/NICK")) {
 					NICK();
 				} else if (input.startsWith("/AWAY")) {
-					AWAY();
+					AWAY(input);
+				} else if (input.startsWith("/TOPIC")) {
+					TOPIC(input);
 				} else {
 					Broadcast(input);
 				}	
@@ -142,8 +154,8 @@ public class Server_handler extends Thread{
 				   "/AWAY - enables client to create an away message\n" + 
 				   "/WHOIS - displays information about a client in the channel\n" +
 				   "/KICK- enables channel owner to kick out a client from the channel\n" +
-				   "/TOPIC - enables channel owner to change the topic of the channel";
-
+				   "/TOPIC - enables channel owner to change the topic of the channel" +
+				   "/NAMES - shows a list of users in a channel, no channels specified shows all clients"; 	
 		Self_message(help_menu);
 	} 
 	
@@ -207,8 +219,35 @@ public class Server_handler extends Thread{
 	// presents an away message
         // Flips your status from its previous status
 	// If you were active you will now be away, if you were away you will now be active 
-	public void AWAY() {
+	public void AWAY(String input) {
 		this.is_away = (!is_away);
+
+		if(is_away) {
+			String new_away_message = input; 	
+                        if (new_away_message.length() > 6) {
+                        	new_away_message = new_away_message.substring(6).trim();
+				this.away_message = "< AWAY MESSAGE > "+ new_away_message;
+                         } else {
+                                 return;
+                         }
+		}
+
+	}
+
+	// this enables you to change the 'topic' or name of the channel you are currently in
+	// /TOPIC <topic> will change the topic of the current channel into <topic>
+	// if <topic> is omitted then the current topic of the channel will be shown 
+	public void TOPIC(String input) {
+		String topic_request = input;
+		String channel_name = this.current_channel.get_channel_name();
+		if (topic_request.length() > 7) {
+			topic_request = topic_request.substring(7).trim();
+			this.current_channel.set_channel_topic(topic_request);
+			Self_message("The topic of channel " + channel_name + " has now been set to " + topic_request);
+		} else {
+			String current_topic = this.current_channel.get_channel_topic();
+			Self_message("The topic of channel " + channel_name + " is " + current_topic);
+		}	
 	}
 
 	/**
@@ -224,10 +263,9 @@ public class Server_handler extends Thread{
 					Server_handler client = broadcast_recipients.get(i);
                                 	if ((client != this) && (client.current_channel == this.current_channel)) {
 						if (client.is_away) {
-							this.getWriter().println("I am currently away from my computer.\n" +
-										 "Pleave leave a message");
+							this.get_writer().println(client.get_away_message());
 						} else {
-				     	 		client.getWriter().println(this.name + message);
+				     	 		client.get_writer().println(this.name + message);
                                  		}
 					}       
                         	 }	 			

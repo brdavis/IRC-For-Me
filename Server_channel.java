@@ -10,18 +10,25 @@ public class Server_channel{
 	private Server_handler channel_operator;
 	// array of all clients in channel
 	private ArrayList<Server_handler> channel_list;
+	// topic of channel
+	private String channel_topic;
 
 	/**
 	* Constructor method
 	**/
 	Server_channel(String name, Server_handler client) {
+
 		this.channel_name = name;
+
 		this.channel_operator = client;
+
 		this.channel_list = new ArrayList<Server_handler>();
 		channel_list.add(channel_operator);
+
+		this.channel_topic = "not set";
+
 		Server.all_irc_channels.add(this);
 		System.out.println("Channel " + this.channel_name + " was created by " + this.channel_operator.get_name());
-		
 	}
 	
 	
@@ -30,21 +37,23 @@ public class Server_channel{
 	**/
 	
 	// Add a client to the channel
-	public void join_list(Server_handler client) {
+	public void join_list(Server_handler requesting_client) {
 		for(int i = 0; i < channel_list.size(); i++) {
-			if (channel_list.get(i) == client) {
+			Server_handler existing_client = channel_list.get(i);
+			if (existing_client == requesting_client) {
 				return;
 			}
 		}	
-		this.channel_list.add(client);		
+		this.channel_list.add(requesting_client);		
 	}
 
 	// Remove a client from the channel
 
-	// Change the name of the channel
-	public void change_name(String new_name) {
-		this.channel_name = new_name;
+	// set the topic of the channel
+	public void set_channel_topic(String new_topic) {
+		this.channel_topic = new_topic;
 	}
+
 
 	/**
 	* Getter methods
@@ -55,10 +64,18 @@ public class Server_channel{
 		return this.channel_name;
 	}
 	
+	// Get the operator of the channel
+	public Server_handler get_channel_operator() {
+		return this.channel_operator;
+	}
+
 	// Get the list of clients active in the channel
 	public ArrayList<Server_handler> get_channel_list() {
 		return this.channel_list;
 	}
-	
- 
+
+	// Get the topic of the channel
+	public String get_channel_topic() {
+		return this.channel_topic;
+	}
 }
