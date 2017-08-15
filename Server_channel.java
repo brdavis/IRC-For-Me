@@ -19,7 +19,6 @@ public class Server_channel{
 		this.channel_operator = client;
 		this.channel_list = new ArrayList<Server_handler>();
 		channel_list.add(channel_operator);
-//		Server.add_channel(this);
 		Server.all_irc_channels.add(this);
 		System.out.println("Channel " + this.channel_name + " was created by " + this.channel_operator.get_name());
 		

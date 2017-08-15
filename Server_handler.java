@@ -165,16 +165,10 @@ public class Server_handler extends Thread{
 
 			//check if channel already exists
 			for(int j = 0; j < all_channels.size(); j++) {
-				//if channel exists, join the channel
-				//String channel_name = all_channels.get(j).channel_name;
-				//if(channel_name.equals(channel_request)) {
 				Server_channel channel = all_channels.get(j);
 				if(channel.get_channel_name().equals(channel_request)) {
 					channel.join_list(this);
 					set_current_channel(channel);
-					//all_channels.get(j).join_list(this);
-					//set_current_channel(all_channels.get(j));
-					Self_message("Found a match, already existing channel");
 					return;
 				}
 			}
@@ -224,10 +218,6 @@ public class Server_handler extends Thread{
 	// Send message to all clients
 	public void Broadcast(String message) {
 		synchronized (this) {
-		//	ArrayList<Server_handler> client_list;
-		//	ArrayList<Server_handler> broadcast_recipients;
-		//	Server_channel the_senders_current_channel = this.current_channel;
-
 			if (this.current_channel != null) { 
 				ArrayList<Server_handler> broadcast_recipients = this.current_channel.get_channel_list();
 	                         for(int i = 0; i < broadcast_recipients.size(); i++) {
@@ -242,7 +232,6 @@ public class Server_handler extends Thread{
 					}       
                         	 }	 			
 			} else {
-			//	client_list = Server.get_list();
 				Self_message("You are currently not in an irc-channel");
 				Self_message("To proceed, please join a channel");
 			}
