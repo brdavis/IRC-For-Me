@@ -8,8 +8,8 @@
 * /HELP - shows a general list of commands to client -- implemented
 * /JOIN - enables client to join a channel -- implemented
 * /LIST - shows a list of all current channels -- implemented
-* /LEAVE - enables client to leave a channel
-* /QUIT - enables client to exit IRC-for-me application
+* /LEAVE - enables client to leave a channel -- implemented
+* /QUIT - enables client to exit IRC-for-me application -- implemented
 * /NICK - enables client to change its screen name -- implemented
 * /AWAY - enables client to create an away message -- implemented
 * /WHOIS - displays information about a client in the channel-- implemented
@@ -41,7 +41,7 @@ public class Server_handler extends Thread{
 	/**
 	* Channel bookkeeping
 	**/
-//	private ArrayList<Server_channel> channels;
+	private ArrayList<Server_channel> current_channels_list;
 	private Server_channel current_channel;	
 	
 	/**
@@ -49,7 +49,7 @@ public class Server_handler extends Thread{
 	**/
 	public Server_handler(Socket socket) {
 		this.socket = socket;
-		//this.channels = new ArrayList<Server_channel>();
+		this.current_channels_list = new ArrayList<Server_channel>();
 		Server.add_client(this);
 		this.is_away = false;
 		this.away_message = "< AWAY MESSAGE > " + 
@@ -79,7 +79,6 @@ public class Server_handler extends Thread{
 
 	public void set_current_channel(Server_channel new_channel) {
 		this.current_channel = new_channel;
-		//channels.add(new_channel);
 	}
 	
 	public PrintWriter get_writer() {
@@ -132,6 +131,8 @@ public class Server_handler extends Thread{
 					LIST();
 				} else if (input.startsWith("/LEAVE")) {
 					LEAVE(input);
+				} else if (input.startsWith("/QUIT")) {
+					QUIT();
 				} else if (input.startsWith("/NICK")) {
 					NICK();
 				} else if (input.startsWith("/AWAY")) {
@@ -196,6 +197,7 @@ public class Server_handler extends Thread{
 				if(channel.get_channel_name().equals(channel_request)) {
 					channel.join_list(this);
 					set_current_channel(channel);
+					current_channels_list.add(channel);
 					return;
 				}
 			}
@@ -203,6 +205,7 @@ public class Server_handler extends Thread{
 			// If channel does not exit, create a new channel
 			Server_channel new_channel = new Server_channel(channel_request, this);
 			set_current_channel(new_channel);
+			current_channels_list.add(new_channel);
 		}
 	}
 
@@ -230,12 +233,18 @@ public class Server_handler extends Thread{
 	public void LEAVE(String input) {
 		synchronized (this) {
 			// Get name of channel that the client wants to leave
-			String leave_channel = input;
-			if (leave_channel.length() > 7) {
-				leave_channel = leave_channel.substring(7).trim();
+			String leave_channel;
+			if (input.startsWith("/LEAVE")) {
+				leave_channel = input;
+				if (leave_channel.length() > 7) {
+					leave_channel = leave_channel.substring(7).trim();
+				} else {
+					Self_message("Please try again with the format /LEAVE <name>");
+					return;
+				}
 			} else {
-				Self_message("Please try again with the format /LEAVE <name>");
-				return;
+				leave_channel = input;
+				Self_message("leave_channel is " + leave_channel);
 			}
 
 			// Get the ArrayList of all channels
@@ -259,6 +268,25 @@ public class Server_handler extends Thread{
 			// Not an existing channel
 			Self_message("The channel you wished to leave does not exist");
 		}
+	}
+
+	//QUIT
+	// exits out of entire application
+	public void QUIT() {
+		// Leave every channel you are a part of
+		for (int i = 0; i < this.current_channels_list.size(); i++) {
+			String channel = current_channels_list.get(i).get_channel_name();
+			Self_message("Channel you are leaving" + channel);
+			LEAVE(channel);
+		} 
+
+		// Remove yourself from Server's list of clients
+		Server.leave_application(this);
+
+		// Send exit message
+		Self_message("Thank you for using IRC-For-ME.\n" +
+			     "Goodbye.");
+		
 	}
 
 	// Changes your screen name
@@ -417,8 +445,8 @@ public class Server_handler extends Thread{
 					}       
                         	 }	 			
 			} else {
-				Self_message("You are currently not in an irc-channel");
-				Self_message("To proceed, please join a channel");
+				Self_message("You are currently not in an irc-channel.\n" +
+					     "To proceed, please join a channel.");
 			}
 	
 		}

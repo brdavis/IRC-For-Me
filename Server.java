@@ -42,6 +42,15 @@ public class Server {
  		return client_connections;
 	}
 
+	public static void leave_application(Server_handler exiting_client) {
+		int client = client_connections.indexOf(exiting_client);
+		if (client != -1) {
+			client_connections.remove(client);
+		} else {
+			System.out.println("Error: Was not able to remove client");
+		}	
+	}
+
 	/**
 	* ArrayList to track all active channels
 	**/
