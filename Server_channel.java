@@ -28,7 +28,7 @@ public class Server_channel{
 		this.channel_topic = "not set";
 
 		Server.all_irc_channels.add(this);
-		System.out.println("Channel " + this.channel_name + " was created by " + this.channel_operator.get_name());
+//		System.out.println("Channel " + this.channel_name + " was created by " + this.channel_operator.get_name());
 	}
 	
 	

@@ -24,7 +24,7 @@ public class Client {
 		try {
 			//connect client to IRC-For-Me server
 			Socket socket = new Socket(SERVER_HOSTNAME, SERVER_PORT);
-			System.out.println("Connected to the server sucessfully");
+//			System.out.println("Connected to the server sucessfully");
 
 			//set up two-way communication channel between client and server
 			server_output = new BufferedReader(new InputStreamReader(socket.getInputStream()));

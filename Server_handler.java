@@ -73,20 +73,26 @@ public class Server_handler extends Thread{
 		}
 	}
 
+	// Set the current_channel
+ 	public void set_current_channel(Server_channel new_channel) {
+ 		this.current_channel = new_channel;
+	} 
+
 	/**
 	* Getter methods
 	**/
 
-	public void set_current_channel(Server_channel new_channel) {
-		this.current_channel = new_channel;
-	}
+//	public void set_current_channel(Server_channel new_channel) {
+//		this.current_channel = new_channel;
+//	}
 	
 	public PrintWriter get_writer() {
 		return server_output;
 	}
 
 	public String get_name() {
-		return this.name;
+	//	return this.name;
+		return name;
 	}
 
 	public String get_away_message() {
@@ -101,23 +107,51 @@ public class Server_handler extends Thread{
 		return is_away;
 	}
 
+	public String application_welcome_message() {
+		String welcome_message = "\t\t Welcome to IRC-For-ME\n\n" +
+
+					 "The application that allows you to chat with all your friends!\n" +
+					 "To begin, let's review all of the available command in IRC-For-ME\n\n" +
+
+                                         "\t\t ALL AVAILABLE IRC COMMANDS\n\n" +
+                                         "/HELP - shows a general list of commands to client\n" +
+                                         "/LIST - shows a list of all current channels\n" +
+                                         "/JOIN - enables client to join a channel\n" +
+                                         "/LEAVE - enables client to leave a channel\n" +
+                                         "/QUIT - enables client to exit IRC-for-me application\n" +
+                                         "/NICK - enables client to change its screen name\n" +
+                                         "/AWAY - enables client to create an away message\n" +
+                                         "/WHOIS - displays information about a client in the channel\n" +
+                                         "/KICK- enables channel owner to kick out a client from the channel\n" +
+                                         "/TOPIC - enables channel owner to change the topic of the channel\n" +
+                                         "/NAMES - shows a list of users in a channel\n\n" +
+
+					 "If you ever need a review of this list just type '/HELP'\n" +
+					 "\tThese commands are all case sensitive\n\n" +
+
+					 "\t\t\t ENJOY!\n\n";
+
+		return welcome_message;  
+	}
+
 	/**
 	* Standard run method to start thread functionality
 	**/
 	public void run() {
-		System.out.println("client" + this.name + "is running");
+		//System.out.println("client" + this.name + "is running");
 		
 		//show client list
-		ArrayList<Server_handler> client_list = Server.get_list();
-		for(int i = 0; i < client_list.size(); i++) {
-			System.out.println(client_list.get(i));
-		}
+	//	ArrayList<Server_handler> client_list = Server.get_list();
+	//	for(int i = 0; i < client_list.size(); i++) {
+	//		System.out.println(client_list.get(i));
+	//	}
 
 		//relay messages
 		try {
 			server_output = new PrintWriter(socket.getOutputStream(), true);
 			client_input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			
+	
+			Self_message(application_welcome_message());
 			set_name();
 
 			//IRC command directory
@@ -244,7 +278,7 @@ public class Server_handler extends Thread{
 				}
 			} else {
 				leave_channel = input;
-				Self_message("leave_channel is " + leave_channel);
+				//Self_message("leave_channel is " + leave_channel);
 			}
 
 			// Get the ArrayList of all channels
@@ -254,7 +288,7 @@ public class Server_handler extends Thread{
 			for(int i = 0; i < channels.size(); i++) {
 				Server_channel channel = channels.get(i);
 				if(channel.get_channel_name().equals(leave_channel)) {
-					Self_message("Channel has been matched");
+					//Self_message("Channel has been matched");
 					boolean able_to_leave_channel = channel.remove_from_channel_list(this);
 					if (able_to_leave_channel) {
 						Self_message("You have left channel " + leave_channel);
@@ -276,7 +310,7 @@ public class Server_handler extends Thread{
 		// Leave every channel you are a part of
 		for (int i = 0; i < this.current_channels_list.size(); i++) {
 			String channel = current_channels_list.get(i).get_channel_name();
-			Self_message("Channel you are leaving" + channel);
+			//Self_message("Channel you are leaving" + channel);
 			LEAVE(channel);
 		} 
 
@@ -377,7 +411,7 @@ public class Server_handler extends Thread{
 			if (whois_client.length() > 7) {
 				whois_client = whois_client.substring(7).trim();
 				whois_client = "< " + whois_client + " >";
-				Self_message(whois_client);
+			//	Self_message(whois_client);
 			} else {
 				Self_message("Please try again with the format /WHOIS <name>");
 				return;
@@ -391,10 +425,10 @@ public class Server_handler extends Thread{
 			// Find client
 			for(int i = 0; i < all_clients.size(); i++) {
 				Server_handler client = all_clients.get(i);
-				Self_message(client.get_name());
+				//Self_message(client.get_name());
 				if(client.get_name().equals(whois_client)) {
 					//get and send all client information
-					Self_message("Client requested does exist");
+				//	Self_message("Client requested does exist");
 					String name = client.get_name();
 
 					Server_channel channel = client.get_current_channel();

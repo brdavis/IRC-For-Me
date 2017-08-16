@@ -91,7 +91,7 @@ public class Server {
 			try {
 				Socket socket = serverSocket.accept();
 				
-				System.out.println("The server has just accepted a new client request");
+			//	System.out.println("The server has just accepted a new client request");
 		
 				Server_handler new_client = new Server_handler(socket);
 				new_client.start();
