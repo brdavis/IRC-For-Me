@@ -12,10 +12,10 @@
 * /QUIT - enables client to exit IRC-for-me application
 * /NICK - enables client to change its screen name -- implemented
 * /AWAY - enables client to create an away message -- implemented
-* /WHOIS - displays information about a client in the channel
+* /WHOIS - displays information about a client in the channel-- use client_connections list to directly find client
 * /KICK - enables channel owner to kick out a client from the channel
 * /TOPIC - enables channel owner to view or change the topic of the channel -- implemented 
-* /NAMES - shows a list of users in a channel, no channels specified shows all clients 
+* /NAMES - shows a list of users in a channel, no channels specified shows all clients -- implemented - needs to be tested 
 *
 **/
 
@@ -55,6 +55,7 @@ public class Server_handler extends Thread{
 		this.away_message = "< AWAY MESSAGE > " + 
 				    "I am currently away from my computer.\n" +
 				    "Pleave leave a message";
+		
 	}
 
 	/**
@@ -127,6 +128,8 @@ public class Server_handler extends Thread{
 					AWAY(input);
 				} else if (input.startsWith("/TOPIC")) {
 					TOPIC(input);
+				} else if (input.startsWith("/NAMES")) {
+					NAMES(input);
 				} else {
 					Broadcast(input);
 				}	
@@ -248,6 +251,44 @@ public class Server_handler extends Thread{
 			String current_topic = this.current_channel.get_channel_topic();
 			Self_message("The topic of channel " + channel_name + " is " + current_topic);
 		}	
+	}
+
+	//NAMES 
+	// if /NAMES <channel> lists names in the channel
+	// if /NAMES lists all clients in application
+	public void NAMES(String input) {
+		synchronized (this) {
+			String specified_channel = input;
+			//list names in that channel
+			if (specified_channel.length() > 7) {
+				specified_channel = specified_channel.substring(7).trim();
+				// find specified channels
+				ArrayList<Server_channel> all_channels = Server.get_all_irc_channels();
+				ArrayList<Server_handler> names;
+				for(int j = 0; j < all_channels.size(); j++) {
+					Server_channel channel = all_channels.get(j);
+					if (channel.get_channel_name().equals(specified_channel)) {
+						Self_message("All of the clients in channel " + specified_channel + " : ");
+						//Self_message("That channel exists");
+						names = channel.get_channel_list();
+						for (int i = 0; i < names.size(); i++) {
+							Server_handler client = names.get(i);
+							Self_message(client.get_name());
+						}
+						return;
+					} 
+				//	Self_message("The channel you specified could not be found. Please try again.");
+				}
+				Self_message("The channel you specified could not be found. Please try again.");			
+			} else {
+				Self_message("All of the clients in IRC-For-ME :");
+				ArrayList<Server_handler> names = Server.get_list();
+				for (int i = 0; i < names.size(); i++) {
+					Server_handler client = names.get(i);
+					Self_message(client.get_name());
+				}
+			}
+		}
 	}
 
 	/**

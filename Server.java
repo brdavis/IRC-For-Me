@@ -86,7 +86,6 @@ public class Server {
 		
 				Server_handler new_client = new Server_handler(socket);
 				new_client.start();
-				client_connections.add(new_client);
 			
 			} catch(IOException e) {
 				System.err.println("An error has occured in accepting new client connection");
