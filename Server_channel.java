@@ -47,8 +47,6 @@ public class Server_channel{
 		this.channel_list.add(requesting_client);		
 	}
 
-	// Remove a client from the channel
-
 	// set the topic of the channel
 	public void set_channel_topic(String new_topic) {
 		this.channel_topic = new_topic;
@@ -78,4 +76,18 @@ public class Server_channel{
 	public String get_channel_topic() {
 		return this.channel_topic;
 	}
-}
+
+
+	// Remove a client from the channel_list
+	public boolean remove_from_channel_list(Server_handler leaving_client) {
+		int client = channel_list.indexOf(leaving_client);
+		if (client != -1) {
+			channel_list.remove(client);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+
+}	

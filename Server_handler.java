@@ -53,8 +53,8 @@ public class Server_handler extends Thread{
 		Server.add_client(this);
 		this.is_away = false;
 		this.away_message = "< AWAY MESSAGE > " + 
-				    "I am currently away from my computer.\n" +
-				    "Pleave leave a message";
+				    "I am currently away from my computer." +
+				    "Pleave leave a message.";
 		
 	}
 
@@ -130,6 +130,8 @@ public class Server_handler extends Thread{
 					JOIN(input);
 				} else if (input.startsWith("/LIST")) {
 					LIST();
+				} else if (input.startsWith("/LEAVE")) {
+					LEAVE(input);
 				} else if (input.startsWith("/NICK")) {
 					NICK();
 				} else if (input.startsWith("/AWAY")) {
@@ -222,6 +224,41 @@ public class Server_handler extends Thread{
 			Self_message("There are currently no active channels on IRC-FOR-ME");
 		}
 	   }			
+	}
+
+	//enables client to leave a particular channel
+	public void LEAVE(String input) {
+		synchronized (this) {
+			// Get name of channel that the client wants to leave
+			String leave_channel = input;
+			if (leave_channel.length() > 7) {
+				leave_channel = leave_channel.substring(7).trim();
+			} else {
+				Self_message("Please try again with the format /LEAVE <name>");
+				return;
+			}
+
+			// Get the ArrayList of all channels
+			ArrayList<Server_channel> channels = Server.get_all_irc_channels();
+		
+			// Find channel that client wants to leave
+			for(int i = 0; i < channels.size(); i++) {
+				Server_channel channel = channels.get(i);
+				if(channel.get_channel_name().equals(leave_channel)) {
+					Self_message("Channel has been matched");
+					boolean able_to_leave_channel = channel.remove_from_channel_list(this);
+					if (able_to_leave_channel) {
+						Self_message("You have left channel " + leave_channel);
+					} else {
+						Self_message("You are not a part of channel " + leave_channel);
+					}
+					return;
+				}
+			}
+
+			// Not an existing channel
+			Self_message("The channel you wished to leave does not exist");
+		}
 	}
 
 	// Changes your screen name
