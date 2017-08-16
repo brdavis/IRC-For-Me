@@ -12,10 +12,10 @@
 * /QUIT - enables client to exit IRC-for-me application
 * /NICK - enables client to change its screen name -- implemented
 * /AWAY - enables client to create an away message -- implemented
-* /WHOIS - displays information about a client in the channel-- use client_connections list to directly find client
+* /WHOIS - displays information about a client in the channel-- implemented
 * /KICK - enables channel owner to kick out a client from the channel
 * /TOPIC - enables channel owner to view or change the topic of the channel -- implemented 
-* /NAMES - shows a list of users in a channel, no channels specified shows all clients -- implemented - needs to be tested 
+* /NAMES - shows a list of users in a channel, no channels specified shows all clients -- implemented  
 *
 **/
 
@@ -66,7 +66,7 @@ public class Server_handler extends Thread{
 			String name_prompt = "Enter your preferred screen name";
 			server_output.println(name_prompt);
 			String screen_name = client_input.readLine();
-			this.name = "< " + screen_name + " > ";
+			this.name = "< " + screen_name + " >";
 		} catch (IOException e) {
 			System.out.println("ERROR: Cannot set screen name");
 			System.exit(ERROR);
@@ -87,11 +87,19 @@ public class Server_handler extends Thread{
 	}
 
 	public String get_name() {
-		return name;
+		return this.name;
 	}
 
 	public String get_away_message() {
 		return away_message;
+	}
+
+	public Server_channel get_current_channel() {
+		return current_channel;
+	}
+
+	public Boolean get_is_away() {
+		return is_away;
 	}
 
 	/**
@@ -126,6 +134,8 @@ public class Server_handler extends Thread{
 					NICK();
 				} else if (input.startsWith("/AWAY")) {
 					AWAY(input);
+				} else if (input.startsWith("/WHOIS")) {
+					WHOIS(input);
 				} else if (input.startsWith("/TOPIC")) {
 					TOPIC(input);
 				} else if (input.startsWith("/NAMES")) {
@@ -288,6 +298,65 @@ public class Server_handler extends Thread{
 					Self_message(client.get_name());
 				}
 			}
+		}
+	}
+
+	//WHOIS
+	// provides information about a particular user on IRC
+	// information it provides is:
+	// name, current channel, status
+	public void WHOIS(String input) {
+		synchronized (this) {
+			// Get name of client requested by WHOIS
+			String whois_client = input;
+			if (whois_client.length() > 7) {
+				whois_client = whois_client.substring(7).trim();
+				whois_client = "< " + whois_client + " >";
+				Self_message(whois_client);
+			} else {
+				Self_message("Please try again with the format /WHOIS <name>");
+				return;
+			}
+
+			// Gather information about the client
+			ArrayList<Server_handler> all_clients = Server.get_list();
+			
+			
+
+			// Find client
+			for(int i = 0; i < all_clients.size(); i++) {
+				Server_handler client = all_clients.get(i);
+				Self_message(client.get_name());
+				if(client.get_name().equals(whois_client)) {
+					//get and send all client information
+					Self_message("Client requested does exist");
+					String name = client.get_name();
+
+					Server_channel channel = client.get_current_channel();
+					String interpreted_channel;
+					if (channel != null) {
+						interpreted_channel = channel.get_channel_name();
+					} else {
+						interpreted_channel = "no current channel";
+					}
+
+					Boolean status = client.get_is_away();
+					String interpreted_status;
+					if (status) {
+						interpreted_status = "Away\n " + client.get_away_message();
+					} else {
+						interpreted_status = "Active";
+					}
+					
+					Self_message("Name: " + name + "\n" +
+						     "Current channel: " + interpreted_channel + "\n" +
+						     "Status: " + interpreted_status + "\n");
+					return;
+				} 
+			}
+			
+			// WHOIS client does not exist
+			Self_message(whois_client + " cannot be found");
 		}
 	}
 
