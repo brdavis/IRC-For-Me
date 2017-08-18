@@ -20,7 +20,7 @@ The commands implemented in IRC-For-ME are as follows:
 IRC-For-ME is currently an open source project that is a work in progress. Just as an explicit clarification, this application is written in Java and is intended to be deployed via the linux command line.
 
 # License
-This project is made available under the MIT license. Please see the 'LICENSE' file in this repository for the terms of the license. Additionally, see the 'COPYING'file in this repository for the license and copyright information. 
+This project is made available under the MIT license. Please see the 'LICENSE' file in this repository for the terms of the license. Additionally, see the 'COPYING' file in this repository for the license and copyright information. 
 
 # Author and Contact Information
 Author: Blair Davis  
@@ -43,6 +43,9 @@ This application is intended to have a very simple and straight-forward deployme
 1. In a seperate window start the client with the following command:    
 `java Client Clinet_handler`
  Start all new clients in this manner.
+ 
+ System Requirements: Linux OS with Java installed  
+ Reference: https://www.java.com/en/download/help/download_options.xml
 
 # Useful Links
 ### IRC Information
@@ -57,8 +60,10 @@ This application is intended to have a very simple and straight-forward deployme
 * https://www.tutorialspoint.com/java/java_networking.htm
 * https://www.javatpoint.com/URLConnection-class
 
-# Status
-See the <a href = https://github.com/brdavis/IRC-For-Me/projects/1> project list </a> for pending and completed development tasks.  
+# Status and Development Documentation
+* To get more information about the development of 'IRC-For-Me' look into the docs folder in this repository for a brief overview 
+* Feel free to look at the comments within the source code to understand current coding implementation
+* Additionally see the <a href = https://github.com/brdavis/IRC-For-Me/projects/1> project list </a> for pending and completed development tasks.
 
 # Limitations
  * Current limitation is that this project does not contain a GUI (graphic user interface).
