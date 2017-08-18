@@ -1,12 +1,30 @@
 # IRC-For-Me
 Copyright (c) 2017 Blair Davis
 
-This is a repository for creating an irc server and client in java.
+This Github repository contains all of the files pertaining to the apllication 'IRC-For-ME'. This application is a very simple chatting applicatiom that enables you to talk with your friends online (so long as one person runs the server provided). It currently is implemented as an internet relay chat (IRC), which is a particular type of chat application because it has to follow a designated protocol that delineates particular functionality, or commands. So far, this application has all of the basic bare bones of an IRC up and running. In order to use the application follow the instructions for the 'How To Run This Application' section below. Once the application is running, all users connected to the application server can talk to each other in chatrooms called channels. Users can create channels, join existing channels, and leave channels. A complete list of all implemented commands is shown below.  
 
-IRC-For-ME is written in Java and is intended to be deployed via the linux command line.
+The commands implemented in IRC-For-ME are as follows:  
 
-This is currently a work in progress and is expected to be wrapped up in mid-August.
+/HELP - shows a general list of commands to user  
+/JOIN - enables user to join a channel   
+/LIST - shows a list of all current channels   
+/LEAVE - enables user to leave a channel   
+/QUIT - enables user to exit IRC-for-me application   
+/NICK - enables user to change his/her screen name   
+/AWAY - enables user to create an away message   
+/WHOIS - displays information about a user in the channel  
+/TOPIC - enables channel operator to view or change the topic of the channel   
+/NAMES - shows a list of users in a channel, no channels specified shows all users   
 
+
+IRC-For-ME is currently an open source project that is a work in progress. Just as an explicit clarification, this application is written in Java and is intended to be deployed via the linux command line.
+
+# License
+This project is made available under the MIT license. Please see the 'LICENSE' file in this repository for the terms of the license. Additionally, see the 'COPYING'file in this repository for the license and copyright information. 
+
+# Author and Contact Information
+Blair Davis
+e-mail: bdavis@pdx.edu
 
 # How To Run This Application
 
@@ -16,45 +34,29 @@ This application is intended to have a very simple and straight-forward deployme
 1. Clone this repository with the following command:    
 `git clone https://github.com/brdavis/IRC-For-Me.git `  
 1. Compile the application with the following commands:    
-`javac Server.javac Server_handler.javac `    
+`javac Server.javac Server_handler.javac Server_channel.javac`    
 `javac Client.javac Client_handler.javac`    
 1. Run the application by starting the server first with the following command:    
-`java Server Server_handler`  
+`java Server Server_handler Server_channel`  
 1. In a seperate window start the client with the following command:    
 `java Client Clinet_handler`
+ Start all new clients in this manner.
 
 # Useful Links
 ### IRC Information
+* https://en.wikipedia.org/wiki/List_of_Internet_Relay_Chat_commands#LIST
 * http://www.mirc.com/ircintro.html
+* http://www.geekshed.net/commands/user/
 
 ### Socket Programming and Network Information
+* http://www.oracle.com/technetwork/java/socket-140484.html#server
+* https://docs.oracle.com/javase/tutorial/networking/overview/networking.html
+* https://docs.oracle.com/javase/tutorial/networking/sockets/
+* https://www.tutorialspoint.com/java/java_networking.htm
+* https://www.javatpoint.com/URLConnection-class
 
 # Status
-
-See the GitHub Development Wiki for pending and completed development tasks.
 
 # Limitations
  * Current limitation is that this project does not contain a GUI (graphic user interface).
  * This project can only be deployed on the linux command line. 
-
-# License
-This project is made available under the MIT license. Please see the LICENSE file in this repository for license terms.
-
-# Authors
-Blair Davis
-
-# Status reports
-
-## Week 3 Report
-
-  **What I've accomplished so far:**
-  
-  So far what I've accomplished has primarily been research based. Since this is my first time working with Git and Github I did a few tutorials in order to get acclimated and understand how to use both the site interface and the command line in linux. I then did research primarily on socket programming as well as brushed up on my java. I then began to code and have created a very basic client-server socket connection as the base for my IRC. Finally, I utilized the wiki section of this repository to outline individual project components so that I can keep focused while working on my project.  
-  
-  **What my goals are to accomplish next:**   
-  
-  My next goals are to dive heavily into the code of the project for the next few weeks. I hope to develop a fully functional IRC. Additionally, it would be a reach goal to add a GUI to my IRC.  
-  
-  **Potential obstacles:**    
-  
-  My potential obstacles are mostly just the learning curve of trying to use new tools while working on a software project independently.   
