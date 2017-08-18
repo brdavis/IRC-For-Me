@@ -23,8 +23,8 @@ IRC-For-ME is currently an open source project that is a work in progress. Just 
 This project is made available under the MIT license. Please see the 'LICENSE' file in this repository for the terms of the license. Additionally, see the 'COPYING'file in this repository for the license and copyright information. 
 
 # Author and Contact Information
-Blair Davis  
-e-mail: bdavis@pdx.edu
+Author: Blair Davis  
+E-mail: bdavis@pdx.edu
 
 # How To Run This Application
 
@@ -58,6 +58,7 @@ This application is intended to have a very simple and straight-forward deployme
 * https://www.javatpoint.com/URLConnection-class
 
 # Status
+See the <a href = https://github.com/brdavis/IRC-For-Me/projects/1> project list </a> for pending and completed development tasks.  
 
 # Limitations
  * Current limitation is that this project does not contain a GUI (graphic user interface).
