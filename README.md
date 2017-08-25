@@ -36,8 +36,8 @@ This application is intended to have a very simple and straight-forward deployme
 1. Move to source_code folder with the following command:  
 `cd source_code`
 1. Compile the application with the following commands:    
-`javac Server.javac Server_handler.javac Server_channel.javac`    
-`javac Client.javac Client_handler.javac`    
+`javac Server.java Server_handler.java Server_channel.java`    
+`javac Client.java Client_handler.java`    
 1. Run the application by starting the server first with the following command:    
 `java Server Server_handler Server_channel`  
 1. In a seperate window start the client with the following command:    
