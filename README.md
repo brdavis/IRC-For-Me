@@ -20,7 +20,7 @@ The commands implemented in IRC-For-ME are as follows:
 IRC-For-ME is currently an open source project that is a work in progress. Just as an explicit clarification, this application is written in Java and is intended to be deployed via the linux command line.
 
 # License
-This project is made available under the MIT license. Please see the 'LICENSE' file in this repository for the terms of the license. Additionally, see the 'COPYING' file in this repository for the license and copyright information. 
+This project is made available under the MIT license. Please see the 'LICENSE' file in this repository for the terms of the license. 
 
 # Author and Contact Information
 Author: Blair Davis  
